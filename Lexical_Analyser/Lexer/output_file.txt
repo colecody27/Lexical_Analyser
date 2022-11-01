@@ -1,0 +1,14 @@
+Expected output:
+
+token					lexeme
+-------------------------
+keyword				while
+separator			(
+identifier				x
+operator				<
+identifier				upper
+separator			)
+identifier				t
+operator				=
+real						33.00
+separator			;
