@@ -8,6 +8,29 @@ public class main {
 
 	// Driver program to use lexer class
 	public static void main(String[] args) {
+
+		HashSet<Character> seperators = new HashSet<Character>();
+		seperators.add('(');
+		seperators.add(')');
+		seperators.add(';');
+
+		HashSet<Character> operators = new HashSet<Character>();
+		operators.add('=');
+		operators.add('<');
+
+		HashSet<String> keywords = new HashSet<String>();
+		keywords.add("while");
+		keywords.add("for");
+
+		// Test splitString function
+		String input_spaces = "while  (s < upper)   t = 33.00;";
+		String input_nospaces = "while(s<upper)t=33.00;";
+		ArrayList<String> output = splitString(input_spaces, seperators, operators);
+
+		for (String word : output) {
+			System.out.println(word);
+		}
+
 		// Create file and scanner instances
 		File file = new File("input_scode.txt");
 		Scanner scanFile = null;
@@ -19,42 +42,54 @@ public class main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// Iterate through each line in the text
-		while (scanFile.hasNextLine()) {
-			String line = scanFile.nextLine();
-			ArrayList<String> subStrings = new ArrayList<String>();
-			int substring_count = 0;
-
-			// Split string on spaces, can't use regex
-			for (int i = 0; i < line.length(); i += substring_count) {
-				substring_count = 0;
-				StringBuilder sb = new StringBuilder();
-				int j = i;
-				while (j < line.length()) {
-					if (line.charAt(j) != ' ') {
-						subStrings.add(sb.toString());
-						substring_count++;
-						break;
-					} else
-						sb.append(line.charAt(j));
-					substring_count++;
-				}
-			}
-
-			for (String word : subStrings) {
-				System.out.println(word);
-			}
-
-		}
-
 	}
 
-	// Input -> String of source code in C++
-	// Output -> Output to console -> Two columns[token - lexeme]
-	// public static List<String[]> lexer(String line) {
-	// List<String[]> tokens = new ArrayList<String[]>();
-	//
-	// }
-}
 
+	public static ArrayList<String[]> lexer(ArrayList<String> substrings, HashSet<Character> seperators,
+			HashSet<Character> operators, HashSet<String> keywords) {
+
+		return null;
+	}
+
+
+	public static ArrayList<String> splitString(String str, HashSet<Character> seperators,
+			HashSet<Character> operators) {
+		ArrayList<String> substrings = new ArrayList<String>();
+		int wordCount = 0;
+
+		for (int i = 0; i < str.length(); i += wordCount) {
+			StringBuilder sb = new StringBuilder();
+			for (int j = i; j < str.length(); j++) {
+				char curr = str.charAt(j);
+				wordCount = j - i;
+
+				// if (wordCount == 0)
+				// wordCount = 1;
+
+				// Space has been reached
+				if (curr == ' ') {
+					if (sb.toString().compareTo("") == 0) {
+						wordCount++;
+						break;
+					}
+					substrings.add(sb.toString());
+					break;
+				}
+
+				// Character is a seperator or operator
+				if (seperators.contains(curr) || operators.contains(curr)) {
+					if (sb.toString().length() > 0)
+						substrings.add(sb.toString());
+					substrings.add(String.valueOf(curr));
+					wordCount++;
+					break;
+				} else {
+					sb.append(curr);
+				}
+				if (wordCount == 0)
+					wordCount = 1;
+			}
+		}
+		return substrings;
+	}
+}
