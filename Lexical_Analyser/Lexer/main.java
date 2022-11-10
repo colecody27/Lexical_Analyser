@@ -22,15 +22,6 @@ public class main {
 		keywords.add("while");
 		keywords.add("for");
 
-		// Test splitString function
-		String input_spaces = "while  (s < upper)   t = 33.00;";
-		String input_nospaces = "while(s<upper)t=33.00;";
-		ArrayList<String> output = splitString(input_spaces, seperators, operators);
-
-		for (String word : output) {
-			System.out.println(word);
-		}
-
 		// Create file and scanner instances
 		File file = new File("input_scode.txt");
 		Scanner scanFile = null;
@@ -39,16 +30,97 @@ public class main {
 		try {
 			scanFile = new Scanner(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		ArrayList<String> lines = new ArrayList<String>();
+		while (scanFile.hasNextLine()) {
+			String line = scanFile.nextLine();
+			lines.add(line);
+		}
+
+		ArrayList<String> substrings = new ArrayList<String>();
+		// Run each line through the splitString funciton
+		for (String line : lines) {
+			substrings.addAll(splitString(line, seperators, operators));
+		}
+
+		ArrayList<String[]> records = lexer(substrings, seperators, operators, keywords);
+
+		// for (String[] record : records) {
+		// System.out.println(record[0] + " " + record[1]);
+		// }
+		printRecord(records);
+
+	}
+
+
+	public static void printRecord(ArrayList<String[]> record) {
+		File output_file = null;
+		FileWriter writer = null;
+
+		try {
+			output_file = new File("output_file.txt");
+
+			// If file already exists, delete it.
+			if (!output_file.createNewFile())
+				output_file.delete();
+
+			writer = new FileWriter("output_file.txt");
+
+			// Ouput headline to file
+			writer.write(String.format("%-20s %s", "Token", "Lexeme\n"));
+			writer.write("__________________________________\n");
+
+			// Ouput each record to file
+			for (String[] arr : record) {
+				String padding = "                    ";
+				padding = padding.substring(0, padding.length() - arr[0].length());
+				writer.write(String.format("%s%s%-20s\n", arr[0], padding, arr[1]));
+			}
+			writer.close();
+
+		} catch (IOException e) {
+			System.out.println("Creating new file or writer failed");
+			e.printStackTrace();
+		}
+		System.out.println("Done");
 	}
 
 
 	public static ArrayList<String[]> lexer(ArrayList<String> substrings, HashSet<Character> seperators,
 			HashSet<Character> operators, HashSet<String> keywords) {
+		// Iterate through each substring in substrings
+		ArrayList<String[]> records = new ArrayList<String[]>();
 
-		return null;
+		for (String substring : substrings) {
+			String[] record = new String[2];
+			String token = null;
+
+			// Check length and if it is a seperator or operator
+			if (substring.length() > 1) {
+				if (keywords.contains(substring)) // KEYWORD
+					token = "keyword";
+				else if (isNumeric(substring)) // REAL
+					token = "real";
+				else // IDENTIFIER
+					token = "identifier";
+			} else if (substring.length() == 1) {
+				if (seperators.contains(substring.charAt(0))) // SEPERATOR
+					token = "seperator";
+				else if (operators.contains(substring.charAt(0))) // OPERATOR
+					token = "operator";
+				else // IDENTIFIER
+					token = "identifier";
+			}
+			// Add values to record
+			record[0] = token;
+			record[1] = substring;
+
+			// Add record to records
+			records.add(record);
+		}
+		return records;
 	}
 
 
@@ -92,5 +164,15 @@ public class main {
 		}
 		return substrings;
 	}
+
+
+	public static boolean isNumeric(String str) {
+		try {
+			Float.parseFloat(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 }
-//testing github
