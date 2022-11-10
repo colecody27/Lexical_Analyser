@@ -46,10 +46,6 @@ public class main {
 		}
 
 		ArrayList<String[]> records = lexer(substrings, seperators, operators, keywords);
-
-		// for (String[] record : records) {
-		// System.out.println(record[0] + " " + record[1]);
-		// }
 		printRecord(records);
 
 	}
@@ -134,9 +130,6 @@ public class main {
 			for (int j = i; j < str.length(); j++) {
 				char curr = str.charAt(j);
 				wordCount = j - i;
-
-				// if (wordCount == 0)
-				// wordCount = 1;
 
 				// Space has been reached
 				if (curr == ' ') {
