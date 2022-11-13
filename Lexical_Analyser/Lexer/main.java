@@ -62,23 +62,21 @@ public class main {
 		FileWriter writer = null;
 
 		try {
-			output_file = new File("output_file.txt");
+			output_file = new File("output.txt");
 
 			// If file already exists, delete it.
 			if (!output_file.createNewFile())
 				output_file.delete();
 
-			writer = new FileWriter("output_file.txt");
+			writer = new FileWriter("output.txt");
 
 			// Write headline to file
-			writer.write(String.format("%s %s", "Token", "Lexeme\n"));
+			writer.write(String.format("%-20s %s", "Token", "Lexeme\n"));
 			writer.write("__________________________________\n");
 
 			// Ouput each record to file
 			for (String[] arr : records) {
-				String padding = "                    ";
-				padding = padding.substring(0, padding.length() - arr[0].length());
-				writer.write(String.format("%-20s%s%-20s\n", arr[0], padding, arr[1]));
+				writer.write(String.format("%-20s %-20s \n", arr[0], arr[1]));
 			}
 			writer.close();
 		} catch (IOException e) {
