@@ -1,3 +1,9 @@
+/*
+ * Authors: Cody Cole, Aidan Castillo
+ * CPSC 323  
+ * 11/13/22
+ */
+
 package Lexer;
 
 import java.util.*;
@@ -8,16 +14,14 @@ public class main {
 
 	// Driver program to use lexer class
 	public static void main(String[] args) {
-
+		// Create hashsets that will identify keys
 		HashSet<Character> seperators = new HashSet<Character>();
 		seperators.add('(');
 		seperators.add(')');
 		seperators.add(';');
-
 		HashSet<Character> operators = new HashSet<Character>();
 		operators.add('=');
 		operators.add('<');
-
 		HashSet<String> keywords = new HashSet<String>();
 		keywords.add("while");
 		keywords.add("for");
@@ -26,32 +30,34 @@ public class main {
 		File file = new File("input_scode.txt");
 		Scanner scanFile = null;
 
-		// Try to read file
+		// Setup scanner to read file
 		try {
 			scanFile = new Scanner(file);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
+		// Read in each line of file
 		ArrayList<String> lines = new ArrayList<String>();
 		while (scanFile.hasNextLine()) {
 			String line = scanFile.nextLine();
 			lines.add(line);
 		}
 
-		ArrayList<String> substrings = new ArrayList<String>();
-		// Run each line through the splitString funciton
+		// Run each line through the splitString funciton. Returns an arraylist of values.
+		ArrayList<String> values = new ArrayList<String>();
 		for (String line : lines) {
-			substrings.addAll(splitString(line, seperators, operators));
+			values.addAll(splitString(line, seperators, operators));
 		}
 
-		ArrayList<String[]> records = lexer(substrings, seperators, operators, keywords);
-		printRecord(records);
-
+		// Run values through lexer which will return an arraylist of string arrays containing [key, value].
+		ArrayList<String[]> records = lexer(values, seperators, operators, keywords);
+		printRecords(records);
 	}
 
 
-	public static void printRecord(ArrayList<String[]> record) {
+	// Receives list of string arrays and outputs to a file. Will delete file if already existing.
+	public static void printRecords(ArrayList<String[]> records) {
 		File output_file = null;
 		FileWriter writer = null;
 
@@ -64,18 +70,17 @@ public class main {
 
 			writer = new FileWriter("output_file.txt");
 
-			// Ouput headline to file
-			writer.write(String.format("%-20s %s", "Token", "Lexeme\n"));
+			// Write headline to file
+			writer.write(String.format("%s %s", "Token", "Lexeme\n"));
 			writer.write("__________________________________\n");
 
 			// Ouput each record to file
-			for (String[] arr : record) {
+			for (String[] arr : records) {
 				String padding = "                    ";
 				padding = padding.substring(0, padding.length() - arr[0].length());
-				writer.write(String.format("%s%s%-20s\n", arr[0], padding, arr[1]));
+				writer.write(String.format("%-20s%s%-20s\n", arr[0], padding, arr[1]));
 			}
 			writer.close();
-
 		} catch (IOException e) {
 			System.out.println("Creating new file or writer failed");
 			e.printStackTrace();
@@ -84,34 +89,38 @@ public class main {
 	}
 
 
-	public static ArrayList<String[]> lexer(ArrayList<String> substrings, HashSet<Character> seperators,
+	// Receives list of values and hashsets containing identifiers. Outputs an arraylist of records containing [key,
+	// value] pairs.
+	public static ArrayList<String[]> lexer(ArrayList<String> values, HashSet<Character> seperators,
 			HashSet<Character> operators, HashSet<String> keywords) {
-		// Iterate through each substring in substrings
 		ArrayList<String[]> records = new ArrayList<String[]>();
 
-		for (String substring : substrings) {
+		// Iterate through each value in values
+		for (String value : values) {
 			String[] record = new String[2];
 			String token = null;
 
-			// Check length and if it is a seperator or operator
-			if (substring.length() > 1) {
-				if (keywords.contains(substring)) // KEYWORD
+			// Check if length of value is greater than 1.
+			if (value.length() > 1) {
+				if (keywords.contains(value)) // KEYWORD
 					token = "keyword";
-				else if (isNumeric(substring)) // REAL
+				else if (isNumeric(value)) // REAL
 					token = "real";
 				else // IDENTIFIER
 					token = "identifier";
-			} else if (substring.length() == 1) {
-				if (seperators.contains(substring.charAt(0))) // SEPERATOR
+			} // Value is one character
+			else if (value.length() == 1) {
+				if (seperators.contains(value.charAt(0))) // SEPERATOR
 					token = "seperator";
-				else if (operators.contains(substring.charAt(0))) // OPERATOR
+				else if (operators.contains(value.charAt(0))) // OPERATOR
 					token = "operator";
 				else // IDENTIFIER
 					token = "identifier";
 			}
-			// Add values to record
+
+			// Add key-value pair to record
 			record[0] = token;
-			record[1] = substring;
+			record[1] = value;
 
 			// Add record to records
 			records.add(record);
@@ -120,11 +129,13 @@ public class main {
 	}
 
 
+	// Receives a string and outputs each value of the string, excludes whitespace.
 	public static ArrayList<String> splitString(String str, HashSet<Character> seperators,
 			HashSet<Character> operators) {
-		ArrayList<String> substrings = new ArrayList<String>();
+		ArrayList<String> values = new ArrayList<String>();
 		int wordCount = 0;
 
+		// Iterate through each character in the string.
 		for (int i = 0; i < str.length(); i += wordCount) {
 			StringBuilder sb = new StringBuilder();
 			for (int j = i; j < str.length(); j++) {
@@ -137,15 +148,15 @@ public class main {
 						wordCount++;
 						break;
 					}
-					substrings.add(sb.toString());
+					values.add(sb.toString());
 					break;
 				}
 
 				// Character is a seperator or operator
 				if (seperators.contains(curr) || operators.contains(curr)) {
 					if (sb.toString().length() > 0)
-						substrings.add(sb.toString());
-					substrings.add(String.valueOf(curr));
+						values.add(sb.toString());
+					values.add(String.valueOf(curr));
 					wordCount++;
 					break;
 				} else {
@@ -155,10 +166,11 @@ public class main {
 					wordCount = 1;
 			}
 		}
-		return substrings;
+		return values;
 	}
 
 
+	// Receives a string and checks whether the string value is a valid float data type.
 	public static boolean isNumeric(String str) {
 		try {
 			Float.parseFloat(str);
