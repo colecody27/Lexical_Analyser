@@ -4,8 +4,11 @@ Description of how to use the program and expected input and ouput *
 Files Within Lexer Folder
 
 • FSA_mydesign.doc - Contains the Finite State Automata design for the lexical analyzer. 
+
 • README.md - What you are reading now. • input_scode.txt - Contains the input for the lexer program that was provided in the project prompt. 
+
 • main.java - Contains the driver program and helper functions as well as the lexer function. 
+
 • output.txt - Contains the output of output of the lexer application. • main.class - Supporting file
 
 Input
