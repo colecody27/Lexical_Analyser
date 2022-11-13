@@ -11,15 +11,15 @@ Files Within Lexer Folder
 
 • output.txt - Contains the output of output of the lexer application. • main.class - Supporting file
 
-Input
+INPUT
 
 The input consists of a .txt file containing syntax from the programming language, C++. In this case, the input is only one line but the program is setup to handle multiple lines of code.
 
-Output
+OUTPUT
 
 The output is a record with columns, "Lexeme" and "value". Under Lexeme is the token that corresponds with the value found in the input. It is listed in the same row as it's lexeme. The possible lexemes are: • Seperator • Identifier • keyword • Operator • real
 
-How to use
+HOW TO USE 
 
 The program is currently setup to handle the input syntax of C++. To use this program, copy the lexer folder (or the 5 files listed above) over to an IDE of your choice. Do make sure that the "input_scode.txt" file is placed in your directory following the guidelines of your IDE. If the file is not found, an error will be thrown. From here the program is ready to be run. Once main.java is run, it will read the input file and output the lexemes and corresponding values to "output_file.txt". The program is setup to delete "output_file.txt" if it exists, if not it will create said file.
 
