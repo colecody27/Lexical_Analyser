@@ -132,13 +132,22 @@ public class main {
 			HashSet<Character> operators) {
 		ArrayList<String> values = new ArrayList<String>();
 		int wordCount = 0;
+		boolean comment_flag = false;
 
 		// Iterate through each character in the string.
 		for (int i = 0; i < str.length(); i += wordCount) {
+			if (comment_flag)
+				break;
 			StringBuilder sb = new StringBuilder();
 			for (int j = i; j < str.length(); j++) {
 				char curr = str.charAt(j);
 				wordCount = j - i;
+
+				// Commented line has been reached
+				if (curr == '/' && str.charAt(i + 1) == '/') {
+					comment_flag = true;
+					break;
+				}
 
 				// Space has been reached
 				if (curr == ' ') {
