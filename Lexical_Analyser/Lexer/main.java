@@ -18,13 +18,69 @@ public class main {
 		HashSet<Character> seperators = new HashSet<Character>();
 		seperators.add('(');
 		seperators.add(')');
+		seperators.add('{');
+		seperators.add('}');
+		seperators.add('[');
+		seperators.add(']');
+		seperators.add(',');
 		seperators.add(';');
-		HashSet<Character> operators = new HashSet<Character>();
-		operators.add('=');
-		operators.add('<');
+		HashSet<String> operators = new HashSet<String>();
+		operators.add("=");
+		operators.add("<");
+		operators.add(">");
+		operators.add("*");
+		operators.add("+");
+		operators.add("-");
+		operators.add("/");
+		operators.add("%");
+		operators.add("!=");
+		operators.add("<=");
+		operators.add(">=");
+		operators.add("++");
+		operators.add("--");
+		operators.add("==");
+		operators.add("&&");
+		operators.add("||");
+		operators.add("!");
+		operators.add("&");
+		operators.add("|");
+		operators.add("<<");
+		operators.add(">>");
+		operators.add("~");
+		operators.add("^");
+		operators.add("+=");
+		operators.add("-=");
+		operators.add("*=");
+		operators.add("/=");
+		operators.add("%=");
+		operators.add("?:");
 		HashSet<String> keywords = new HashSet<String>();
 		keywords.add("while");
 		keywords.add("for");
+		keywords.add("asm");
+		keywords.add("auto");
+		keywords.add("break");
+		keywords.add("case");
+		keywords.add("catch");
+		keywords.add("char");
+		keywords.add("class");
+		keywords.add("const");
+		keywords.add("continue");
+		keywords.add("default");
+		keywords.add("delete");
+		keywords.add("do");
+		keywords.add("double");
+		keywords.add("else");
+		keywords.add("enum");
+		keywords.add("extern");
+		keywords.add("float");
+		keywords.add("friend");
+		keywords.add("goto");
+		keywords.add("if");
+		keywords.add("inline");
+		keywords.add("int");
+		keywords.add("long");
+		keywords.add("new");
 
 		// Create file and scanner instances
 		File file = new File("input_scode.txt");
@@ -90,7 +146,7 @@ public class main {
 	// Receives list of values and hashsets containing identifiers. Outputs an arraylist of records containing [key,
 	// value] pairs.
 	public static ArrayList<String[]> lexer(ArrayList<String> values, HashSet<Character> seperators,
-			HashSet<Character> operators, HashSet<String> keywords) {
+			HashSet<String> operators, HashSet<String> keywords) {
 		ArrayList<String[]> records = new ArrayList<String[]>();
 
 		// Iterate through each value in values
@@ -104,13 +160,15 @@ public class main {
 					token = "keyword";
 				else if (isNumeric(value)) // REAL
 					token = "real";
+				else if (operators.contains(value)) // OPERATOR
+					token = "operator";
 				else // IDENTIFIER
 					token = "identifier";
 			} // Value is one character
 			else if (value.length() == 1) {
 				if (seperators.contains(value.charAt(0))) // SEPERATOR
 					token = "seperator";
-				else if (operators.contains(value.charAt(0))) // OPERATOR
+				else if (operators.contains(value)) // OPERATOR
 					token = "operator";
 				else // IDENTIFIER
 					token = "identifier";
@@ -128,8 +186,7 @@ public class main {
 
 
 	// Receives a string and outputs each value of the string, excludes whitespace.
-	public static ArrayList<String> splitString(String str, HashSet<Character> seperators,
-			HashSet<Character> operators) {
+	public static ArrayList<String> splitString(String str, HashSet<Character> seperators, HashSet<String> operators) {
 		ArrayList<String> values = new ArrayList<String>();
 		int wordCount = 0;
 		boolean comment_flag = false;
@@ -138,7 +195,9 @@ public class main {
 		for (int i = 0; i < str.length(); i += wordCount) {
 			if (comment_flag)
 				break;
+
 			StringBuilder sb = new StringBuilder();
+
 			for (int j = i; j < str.length(); j++) {
 				char curr = str.charAt(j);
 				wordCount = j - i;
@@ -149,7 +208,15 @@ public class main {
 					break;
 				}
 
-				// Space has been reached
+				// Check if value is currently the start of an operator
+				if (j + 1 < str.length() && operators
+						.contains(String.valueOf(String.valueOf(curr) + String.valueOf(str.charAt(j + 1))))) {
+					values.add(sb.append(curr).append(str.charAt(j + 1)).toString());
+					wordCount += 2;
+					break;
+				}
+
+				// Space has been reached. Ignore space.
 				if (curr == ' ') {
 					if (sb.toString().compareTo("") == 0) {
 						wordCount++;
@@ -160,7 +227,7 @@ public class main {
 				}
 
 				// Character is a seperator or operator
-				if (seperators.contains(curr) || operators.contains(curr)) {
+				if (seperators.contains(curr) || operators.contains(String.valueOf(curr))) {
 					if (sb.toString().length() > 0)
 						values.add(sb.toString());
 					values.add(String.valueOf(curr));
