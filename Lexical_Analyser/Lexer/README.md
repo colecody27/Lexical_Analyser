@@ -4,7 +4,9 @@ README
 
 ***Aidan Castillo | 12***
 
-Description of how to use the program and expected input and ouput * Files Within Lexer Folder
+Description of how to use the program and expected input and ouput 
+
+* Files Within Lexer Folder
 
 • FSA_mydesign.doc - Contains the Finite State Automata design for the lexical analyzer.
 
